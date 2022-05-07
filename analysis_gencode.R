@@ -34,7 +34,7 @@ samps$group <- gsub("\\)","",samps$group)
 samps$group <- gsub(" ","_",samps$group)
 samps$sample_id <- gsub("-",".",samps$sample_id)
 
-ont_nano_tpm_df <- read.table("analysis/counts_tables/trans_gencode.tpm.txt", header = TRUE)
+ont_nano_tpm_df <- read.table("analysis/count_tables/trans_gencode.tpm.txt", header = TRUE)
 rownames(ont_nano_tpm_df) <- ont_nano_tpm_df$sample
 ont_nano_tpm_df <- ont_nano_tpm_df[,-1]
 
