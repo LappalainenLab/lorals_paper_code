@@ -14,8 +14,8 @@
 
 files=(file1 file2 file3)
 
-HOME= dglinos/
-WORKDIR="analysis"
+HOME= dglinos/analysis
+WORKDIR="data"
 
 ## choose one file from array using $SLURM_ARRAY_TASK_ID variable
 ##      $SLURM_ARRAY_TASK_ID is the current task w/in the array (one-based)
