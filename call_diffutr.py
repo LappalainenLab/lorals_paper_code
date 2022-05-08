@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+## Adapted from https://github.com/BrooksLabUCSC/flair/blob/master/bin/call_diffsplice_events.py
+
 import sys, csv, os
 
 try:

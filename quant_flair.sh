@@ -3,7 +3,7 @@
 set -eo pipefail
 
 # Defaults
-FLAIR_DIR='/software/flair/'
+flair_dir='/software/flair/'
 OUTDIR_DEFAULT="$(pwd -P)/count_tables/"
 
 # Usage message
@@ -54,5 +54,5 @@ mkdir -pv ${OUTDIR}
 
 NAME="$(basename ${INPUT})"
 
-(set -x; python "${FLAIR_DIR}"/bin/count_sam_transcripts.py -s "${NAME}.sam" -o "${NAME}.counts.txt" --quality 10 --stringent --isoform_bed "${REFERENCE}")
-(set -x; python "${FLAIR_DIR}"/bin/counts_to_tpm.py "${NAME}.counts.txt" -o "${NAME}.tpm.txt")
+(set -x; python "${flair_dir}"/bin/count_sam_transcripts.py -s "${NAME}.sam" -o "${NAME}.counts.txt" --quality 10 --stringent --isoform_bed "${REFERENCE}")
+(set -x; python "${flair_dir}"/bin/counts_to_tpm.py "${NAME}.counts.txt" -o "${NAME}.tpm.txt")

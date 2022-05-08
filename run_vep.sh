@@ -49,6 +49,6 @@ done
 [[ -f "${VCF}" ]] || (echo "Cannot find vcf file ${VCF}" >&2; exit 1)
 [[ -f "${FASTA}" ]] || (echo "Cannot find fasta file ${FASTA}" >&2; exit 1)
 
-NAME=$(echo "$(basename ${VCF})"_"$(basename ${GFF3})"_.most_severe.txt)
+NAME=$(echo "$(basename ${VCF} .vcf.gz)_$(basename ${GFF3} .gff3.gz)_.most_severe.txt")
 
 (set -x; vep --format "vcf" -input_file "${VCF}" --most_severe --phased --cache --force_overwrite --tab --gtf "${GFF3}" --output_file "${NAME}" --fasta "${FASTA}")

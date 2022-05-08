@@ -53,9 +53,9 @@ done
 
 (set -x; mkdir -p "${OUTDIR}")
 
-NAME="$(basename ${GTF})"
+NAME="$(basename $"{GTF}" .gtf)"
 
-(set -x; python3 suppa.py generateEvents -i "${NAME}.gtf" -o "${OUTDIR_DEFAULT}/${NAME}" -f ioi -e SE SS MX RI FL)
+(set -x; python3 suppa.py generateEvents -i "${GTF}.gtf" -o "${OUTDIR_DEFAULT}/${NAME}" -f ioi -e SE SS MX RI FL)
 (set -x; python3 call_diffutr.py -i "${NAME}.bed")
 (set -x; Rscript construct_diffsplice_table.R -i "${NAME}")
 

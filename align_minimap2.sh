@@ -9,6 +9,7 @@ set -eo pipefail
 OUTDIR_DEFAULT="$(pwd -P)/aligned"
 REFERENCE_DEFAULT='data/Homo_sapiens_assembly38_noALT_noHLA_noDecoy'
 GTF_DEFAULT='data/gencode.v26.annotation.gtf'
+flair_dir='software/flair'
 
 function Usage() {
     echo -e "\
@@ -19,7 +20,6 @@ Where:  -f|--fastq is the path to the input or forward FASTQ file \n\
         -G|--gtf is the path to the transcriptome GTF file \n\
             defaults to ${GTF_DEFAULT} \n\
         [-N|--native] align to the genome true or false \n\
-            defaults to ${GTF_DEFAULT} \n\
         [-o|--outdir] is an optional path to an output directory \n\
             defaults to \e[1m${OUTDIR_DEFAULT}\e[0m \n\
         [--csi] will index the final BAM file with a CSI index \n\
@@ -84,17 +84,17 @@ $(command -v minimap2 > /dev/null 2> /dev/null) || (echo "Cannot find minimap2" 
 
 if [ "${NATIVE}" = true ]
 then
-    (set -x; minimap2 -t 8 -ax splice -uf -k14 "${REFERENCE}.fasta" "${FASTQ}" > "${OUTDIR}/${NAME}.sam")
-    (set -x; samtools view -hSb "${OUTDIR}/${NAME}.sam" > "${OUTDIR}/${NAME}.all.bam")
-    (set -x; samtools view -q 10 -F 2304 -hb "${OUTDIR}/${NAME}.all.bam" > "${OUTDIR}/${NAME}.bam")
-    (set -x; samtools sort "${OUTDIR}/${NAME}.bam" -o "${OUTDIR}/${NAME}.sorted.bam")
-    (set -x; samtools index "${INDEX}" "${OUTDIR}/${NAME}.sorted.bam")
-    (set -x; python bam2Bed12.py -i "${OUTDIR}/${NAME}.sorted.bam" > "${OUTDIR}/${NAME}.sorted.bed")
-    (set -x; cd "${OUTDIR}")
+    (set -x; minimap2 -t 8 -ax splice -uf -k14 "${REFERENCE}.fasta" "${FASTQ}" > "${OUTDIR}/genome/${NAME}.sam")
+    (set -x; samtools view -hSb "${OUTDIR}/genome/${NAME}.sam" > "${OUTDIR}/genome/${NAME}.all.bam")
+    (set -x; samtools view -q 10 -F 2304 -hb "${OUTDIR}/genome/${NAME}.all.bam" > "${OUTDIR}/genome/${NAME}.bam")
+    (set -x; samtools sort "${OUTDIR}/genome/${NAME}.bam" -o "${OUTDIR}/genome/${NAME}.sorted.bam")
+    (set -x; samtools index "${INDEX}" "${OUTDIR}/genome/${NAME}.sorted.bam")
+    (set -x; python "${flair_dir}/bam2Bed12.py" -i "${OUTDIR}/genome/${NAME}.sorted.bam" > "${OUTDIR}/genome/${NAME}.sorted.bed")
+    (set -x; cd "${OUTDIR}genome/")
     (set -x; python flair.py correct -g "${REFERENCE}.fasta" -q "${NAME}.sorted.bed" -t 8 -w 20 -f "${GTF}" -c "${REFERENCE}.genome" -o "${NAME}_noSJ")
   else
-    (set -x; minimap2 -t 8 -ax map-ont -uf -k14 "${REFERENCE}.fasta" "${FASTQ}" > "${OUTDIR}/${NAME}.sam")
-    (set -x; samtools view -hSb "${OUTDIR}/${NAME}.sam" > "${OUTDIR}/${NAME}.all.bam")
-    (set -x; samtools sort "${OUTDIR}/${NAME}.bam" -o "${OUTDIR}/${NAME}.sorted.bam")
-    (set -x; samtools index "${INDEX}" "${OUTDIR}/${NAME}.sorted.bam")
+    (set -x; minimap2 -t 8 -ax map-ont -uf -k14 "${REFERENCE}.fasta" "${FASTQ}" > "${OUTDIR}/transcriptome/${NAME}.sam")
+    (set -x; samtools view -hSb "${OUTDIR}/transcriptome/${NAME}.sam" > "${OUTDIR}/transcriptome/transcriptome/${NAME}.all.bam")
+    (set -x; samtools sort "${OUTDIR}/transcriptome/${NAME}.bam" -o "${OUTDIR}/transcriptome/${NAME}.sorted.bam")
+    (set -x; samtools index "${INDEX}" "${OUTDIR}/transcriptome/${NAME}.sorted.bam")
 fi

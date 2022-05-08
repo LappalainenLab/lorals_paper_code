@@ -14,7 +14,7 @@
 
 files=(file1 file2 file3)
 
-HOME= dglinos/analysis
+HOME= dglinos/analysis/aligned/
 WORKDIR="data"
 
 ## choose one file from array using $SLURM_ARRAY_TASK_ID variable
@@ -27,15 +27,15 @@ do
         begin=`echo $line | awk '{print $2}'`
         end=`echo $line | awk '{print $3}'`
         transcript=`echo $line | awk '{print $5}'`
-        declare -a read_names=($(samtools view -q 10 "${HOME}/${file}_trans_aln_sorted.bam" $transcript | cut -f 1))
+        declare -a read_names=($(samtools view -q 10 "${HOME}/transcriptome/${file}_trans_aln_sorted.bam" $transcript | cut -f 1))
         [[ ${#read_names[@]} -lt 1 ]] && continue
         echo -e "${transcript}\t${#read_names[@]}" >> num_reads_${files}.log
-        samtools view -h -q 10 $HOME/${file}_all_sorted.q.bam $chr\:$begin\-$end | \
+        samtools view -h -q 10 $HOME/genome/${file}_all_sorted.q.bam $chr\:$begin\-$end | \
             awk 'BEGIN{OFS="\t"}{if($1 ~ /^"@"/) {print} else {if($4 >= $begin || $4 <= $end) {print} else {}}}' | \
             grep -wFf <(echo ${read_names[@]} | tr ' ' '\n') | \
             cut -f 10 | \
             perl -ne 'chomp;print length($_) . "\n"' | \
             sort | \
             uniq -c | \
-            sed "s/$/\t${transcript}/" - >> three_prime_bias/${file}_protein__mt_coding_lengths.txt
+            sed "s/$/\t${transcript}/" - >> analysis/three_prime_bias/${file}_protein__mt_coding_lengths.txt
 done < "${WORKDIR}/mitochondrial_protein_coding_start_sites.txt" | uniq | sort -k 1,1 -k 2n,2n
